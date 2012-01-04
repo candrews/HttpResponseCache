@@ -31,7 +31,7 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketPermission;
 import java.net.URL;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 import java.security.Permission;
 import java.util.List;
 import java.util.Map;

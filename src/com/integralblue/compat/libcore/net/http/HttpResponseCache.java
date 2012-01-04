@@ -34,7 +34,7 @@ import java.net.ResponseCache;
 import java.net.SecureCacheResponse;
 import java.net.URI;
 import java.net.URLConnection;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;

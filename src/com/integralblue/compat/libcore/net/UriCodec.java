@@ -20,7 +20,7 @@ package com.integralblue.compat.libcore.net;
 import java.io.ByteArrayOutputStream;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 
 /**
  * Encodes and decodes {@code application/x-www-form-urlencoded} content.

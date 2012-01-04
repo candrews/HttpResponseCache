@@ -31,7 +31,7 @@ import java.net.ResponseCache;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;

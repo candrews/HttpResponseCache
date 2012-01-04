@@ -21,7 +21,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel.MapMode;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

@@ -35,7 +35,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Iterator;

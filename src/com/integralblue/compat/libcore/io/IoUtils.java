@@ -22,7 +22,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.Socket;
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 
 import static com.integralblue.compat.libcore.io.OsConstants.*;
 
