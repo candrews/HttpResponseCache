@@ -16,6 +16,7 @@
 
 package com.integralblue.compat.libcore.io;
 
+import java.io.Closeable;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -34,7 +35,7 @@ import static com.integralblue.compat.libcore.io.OsConstants.*;
  * and either {@link #bigEndianIterator} or {@link #littleEndianIterator} to get a seekable
  * {@link BufferIterator} over the mapped data.
  */
-public final class MemoryMappedFile implements AutoCloseable {
+public final class MemoryMappedFile implements Closeable {
     private long address;
     private final long size;
 
