@@ -21,7 +21,7 @@
 
 package com.integralblue.compat.libcore.io;
 
-import java.nio.charset.Charsets;
+import com.integralblue.compat.Charsets;
 
 import com.integralblue.compat.libcore.util.EmptyArray;
 
