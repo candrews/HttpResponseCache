@@ -67,7 +67,7 @@ public class UnsafeByteSequence {
         bytes[count++] = (byte) b;
     }
 
-    @FindBugsSuppressWarnings("EI_EXPOSE_REP")
+    //@FindBugsSuppressWarnings("EI_EXPOSE_REP")
     public byte[] toByteArray() {
         if (count == bytes.length) {
             return bytes;
