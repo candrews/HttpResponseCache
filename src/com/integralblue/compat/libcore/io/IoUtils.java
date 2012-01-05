@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.Socket;
 import com.integralblue.compat.Charsets;
+import com.integralblue.compat.java.lang.UnsafeByteSequence;
 
 import static com.integralblue.compat.libcore.io.OsConstants.*;
 
