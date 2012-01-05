@@ -69,7 +69,7 @@ public class RawSocket implements Closeable {
             throw new NullPointerException("packet == null");
         }
 
-        Arrays.checkOffsetAndCount(packet.length, offset, byteCount);
+        com.integralblue.compat.java.util.Arrays.checkOffsetAndCount(packet.length, offset, byteCount);
 
         if (destPort < 0 || destPort > 65535) {
             throw new IllegalArgumentException("Port out of range: "
@@ -95,7 +95,7 @@ public class RawSocket implements Closeable {
             throw new NullPointerException("packet == null");
         }
 
-        Arrays.checkOffsetAndCount(packet.length, offset, byteCount);
+        com.integralblue.compat.java.util.Arrays.checkOffsetAndCount(packet.length, offset, byteCount);
 
         if (destMac.length != 6) {
             throw new IllegalArgumentException("MAC length must be 6: "

@@ -54,7 +54,7 @@ final class RetryableOutputStream extends AbstractHttpOutputStream {
     @Override public synchronized void write(byte[] buffer, int offset, int count)
             throws IOException {
         checkNotClosed();
-        Arrays.checkOffsetAndCount(buffer.length, offset, count);
+        com.integralblue.compat.java.util.Arrays.checkOffsetAndCount(buffer.length, offset, count);
         if (limit != -1 && content.size() > limit - count) {
             throw new IOException("exceeded content-length limit of " + limit + " bytes");
         }

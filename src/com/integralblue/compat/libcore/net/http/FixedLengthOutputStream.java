@@ -34,7 +34,7 @@ final class FixedLengthOutputStream extends AbstractHttpOutputStream {
 
     @Override public void write(byte[] buffer, int offset, int count) throws IOException {
         checkNotClosed();
-        Arrays.checkOffsetAndCount(buffer.length, offset, count);
+        com.integralblue.compat.java.util.Arrays.checkOffsetAndCount(buffer.length, offset, count);
         if (count > bytesRemaining) {
             throw new IOException("expected " + bytesRemaining + " bytes but received " + count);
         }

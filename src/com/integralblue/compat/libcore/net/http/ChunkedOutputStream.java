@@ -63,7 +63,7 @@ final class ChunkedOutputStream extends AbstractHttpOutputStream {
     @Override public synchronized void write(byte[] buffer, int offset, int count)
             throws IOException {
         checkNotClosed();
-        Arrays.checkOffsetAndCount(buffer.length, offset, count);
+        com.integralblue.compat.java.util.Arrays.checkOffsetAndCount(buffer.length, offset, count);
 
         while (count > 0) {
             int numBytesWritten;

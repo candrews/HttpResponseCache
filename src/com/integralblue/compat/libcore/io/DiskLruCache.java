@@ -268,7 +268,7 @@ public final class DiskLruCache implements Closeable {
         if (parts[0].equals(CLEAN) && parts.length == 2 + valueCount) {
             entry.readable = true;
             entry.currentEditor = null;
-            entry.setLengths(Arrays.copyOfRange(parts, 2, parts.length));
+            entry.setLengths(com.integralblue.compat.java.util.Arrays.copyOfRange(parts, 2, parts.length));
         } else if (parts[0].equals(DIRTY) && parts.length == 2) {
             entry.currentEditor = new Editor(entry);
         } else if (parts[0].equals(READ) && parts.length == 2) {

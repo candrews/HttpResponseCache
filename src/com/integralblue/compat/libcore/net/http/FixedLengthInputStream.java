@@ -37,7 +37,7 @@ final class FixedLengthInputStream extends AbstractHttpInputStream {
     }
 
     @Override public int read(byte[] buffer, int offset, int count) throws IOException {
-        Arrays.checkOffsetAndCount(buffer.length, offset, count);
+    	com.integralblue.compat.java.util.Arrays.checkOffsetAndCount(buffer.length, offset, count);
         checkNotClosed();
         if (bytesRemaining == 0) {
             return -1;
