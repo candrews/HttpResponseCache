@@ -32,6 +32,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import com.integralblue.compat.Charsets;
+import com.integralblue.compat.Strings;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -589,7 +591,7 @@ public class HttpEngine {
     private void readHeaders(RawHeaders headers) throws IOException {
         // parse the result headers until the first blank line
         String line;
-        while (!(line = Streams.readAsciiLine(socketIn)).isEmpty()) {
+        while (!Strings.isEmpty(line = Streams.readAsciiLine(socketIn))) {
             headers.addLine(line);
         }
 

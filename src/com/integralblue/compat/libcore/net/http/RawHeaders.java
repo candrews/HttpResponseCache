@@ -26,6 +26,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.integralblue.compat.Strings;
+
 /**
  * The HTTP status and unparsed header fields of a single HTTP message. Values
  * are represented as uninterpreted strings; use {@link RequestHeaders} and
@@ -288,7 +290,7 @@ public final class RawHeaders {
             List<String> values = entry.getValue();
             if (fieldName != null) {
                 result.addAll(fieldName, values);
-            } else if (!values.isEmpty()) {
+            } else if (!Strings.isEmpty(values)) {
                 result.setStatusLine(values.get(values.size() - 1));
             }
         }

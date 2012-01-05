@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
+import com.integralblue.compat.Strings;
 import com.integralblue.compat.libcore.util.Objects;
 
 /**
@@ -155,7 +156,7 @@ public final class ResponseHeaders {
                 ageSeconds = HeaderParser.parseSeconds(value);
             } else if ("Vary".equalsIgnoreCase(fieldName)) {
                 // Replace the immutable empty set with something we can mutate.
-                if (varyFields.isEmpty()) {
+                if (Strings.isEmpty(varyFields)) {
                     varyFields = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
                 }
                 for (String varyField : value.split(",")) {

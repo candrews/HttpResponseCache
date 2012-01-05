@@ -35,6 +35,8 @@ import java.net.SecureCacheResponse;
 import java.net.URI;
 import java.net.URLConnection;
 import com.integralblue.compat.Charsets;
+import com.integralblue.compat.Strings;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -360,7 +362,7 @@ public final class HttpResponseCache extends ResponseCache {
 
                 if (isHttps()) {
                     String blank = Streams.readAsciiLine(in);
-                    if (!blank.isEmpty()) {
+                    if (!Strings.isEmpty(blank)) {
                         throw new IOException("expected \"\" but was \"" + blank + "\"");
                     }
                     cipherSuite = Streams.readAsciiLine(in);

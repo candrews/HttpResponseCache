@@ -23,6 +23,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
+import com.integralblue.compat.Strings;
+
 /**
  * This is the handler that is responsible for reading files from the file
  * system.
@@ -67,7 +69,7 @@ public class FileHandler extends URLStreamHandler {
         }
 
         String host = url.getHost();
-        if (host == null || host.isEmpty() || host.equalsIgnoreCase("localhost")) {
+        if (host == null || Strings.isEmpty(host) || host.equalsIgnoreCase("localhost")) {
             return new FileURLConnection(url);
         }
 

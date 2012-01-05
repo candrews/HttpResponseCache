@@ -18,6 +18,8 @@ package com.integralblue.compat.libcore.net.url;
 
 import java.util.Locale;
 
+import com.integralblue.compat.Strings;
+
 public final class UrlUtils {
     private UrlUtils() {
     }
@@ -87,7 +89,7 @@ public final class UrlUtils {
      * run together like {@code http://android.comindex.html}.
      */
     public static String authoritySafePath(String authority, String path) {
-        if (authority != null && !authority.isEmpty() && !path.isEmpty() && !path.startsWith("/")) {
+        if (authority != null && !Strings.isEmpty(authority) && !Strings.isEmpty(path) && !path.startsWith("/")) {
             return "/" + path;
         }
         return path;
