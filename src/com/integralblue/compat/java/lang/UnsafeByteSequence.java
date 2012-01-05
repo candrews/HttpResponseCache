@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package java.lang;
+package com.integralblue.compat.java.lang;
 
 import java.nio.charset.Charset;
 
