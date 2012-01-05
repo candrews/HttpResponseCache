@@ -156,7 +156,7 @@ public final class ResponseHeaders {
                 ageSeconds = HeaderParser.parseSeconds(value);
             } else if ("Vary".equalsIgnoreCase(fieldName)) {
                 // Replace the immutable empty set with something we can mutate.
-                if (Strings.isEmpty(varyFields)) {
+                if (varyFields.isEmpty()) {
                     varyFields = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
                 }
                 for (String varyField : value.split(",")) {
