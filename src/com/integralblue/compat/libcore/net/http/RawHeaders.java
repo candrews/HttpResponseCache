@@ -46,7 +46,7 @@ import com.integralblue.compat.Strings;
  */
 public final class RawHeaders {
     private static final Comparator<String> FIELD_NAME_COMPARATOR = new Comparator<String>() {
-        @FindBugsSuppressWarnings("ES_COMPARING_PARAMETER_STRING_WITH_EQ")
+        //@FindBugsSuppressWarnings("ES_COMPARING_PARAMETER_STRING_WITH_EQ")
         @Override public int compare(String a, String b) {
             if (a == b) {
                 return 0;
