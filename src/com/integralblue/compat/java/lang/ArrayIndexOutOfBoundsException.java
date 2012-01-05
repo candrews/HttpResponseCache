@@ -15,13 +15,13 @@
  *  limitations under the License.
  */
 
-package java.lang;
+package com.integralblue.compat.java.lang;
 
 /**
  * Thrown when the an array is indexed with a value less than zero, or greater
  * than or equal to the size of the array.
  */
-public class ArrayIndexOutOfBoundsException extends IndexOutOfBoundsException {
+public class ArrayIndexOutOfBoundsException extends java.lang.ArrayIndexOutOfBoundsException {
 
     private static final long serialVersionUID = -5116101128118950844L;
 
