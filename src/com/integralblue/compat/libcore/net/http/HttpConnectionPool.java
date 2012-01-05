@@ -92,7 +92,7 @@ final class HttpConnectionPool {
             SocketTagger.get().untag(socket);
         } catch (SocketException e) {
             // When unable to remove tagging, skip recycling and close
-            System.logW("Unable to untagSocket(): " + e);
+        	com.integralblue.compat.System.logW("Unable to untagSocket(): " + e);
             connection.closeSocketAndStreams();
             return;
         }

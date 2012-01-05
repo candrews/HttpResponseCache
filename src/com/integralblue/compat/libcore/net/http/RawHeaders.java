@@ -157,7 +157,7 @@ public final class RawHeaders {
              * "Accept\r\n". For platform compatibility and HTTP compliance, we
              * print a warning and ignore null values.
              */
-            System.logW("Ignoring HTTP header field '" + fieldName + "' because its value is null");
+        	com.integralblue.compat.System.logW("Ignoring HTTP header field '" + fieldName + "' because its value is null");
             return;
         }
         namesAndValues.add(fieldName);
