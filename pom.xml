@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<groupId>com.integralblue</groupId>
+	<artifactId>httpresponsecache</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0.0</version>
+
+	<name>HTTP Response Cache</name>
+	<description>An HTTP Response Cache for java.net.URL</description>
+	<url>https://gitorious.org/httpresponsecachecompat</url>
+	<inceptionYear>2012</inceptionYear>
+
+	<developers>
+		<developer>
+			<name>Craig Andrews</name>
+			<email>candrews@integralblue.com</email>
+			<id>candrews</id>
+			<url>http://candrews.integralblue.com.com</url>
+			<timezone>-5</timezone>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>Apache License Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://gitorious.org/httpresponsecachecompat</url>
+		<connection>scm:git:git://gitorious.org/httpresponsecachecompat/main.git</connection>
+		<developerConnection>scm:git:git@gitorious.org:httpresponsecachecompat/main.git</developerConnection>
+	</scm>
+
+	<organization>
+		<name>Craig Andrews</name>
+		<url>http://candrews.integralblue.com</url>
+	</organization>
+
+	<properties>
+		<java.version>1.5</java.version>
+
+		<junit.version>4.8.2</junit.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jakewharton</groupId>
+			<artifactId>disklrucache</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2.2</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<failsOnError>true</failsOnError>
+					<configLocation>${project.basedir}/checkstyle.xml</configLocation>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>checkstyle</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-provider-gitexe</artifactId>
+				<version>1.6</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-manager-plexus</artifactId>
+				<version>1.6</version>
+			</extension>
+		</extensions>
+	</build>
+</project>
+
