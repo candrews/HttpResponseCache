@@ -23,10 +23,12 @@ import java.net.CacheRequest;
 import java.net.CacheResponse;
 import java.net.ResponseCache;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
+import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.libcore.io.IoUtils;
 import com.jakewharton.DiskLruCache;
 
@@ -178,6 +180,7 @@ public final class HttpResponseCache extends ResponseCache implements Closeable 
 
         HttpResponseCache result = new HttpResponseCache(directory, maxSize);
         ResponseCache.setDefault(result);
+        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactoryImpl());
         return result;
     }
 
