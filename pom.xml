@@ -16,7 +16,7 @@
 
 	<name>HTTP Response Cache</name>
 	<description>An HTTP Response Cache for java.net.URL</description>
-	<url>https://gitorious.org/httpresponsecachecompat</url>
+	<url>https://github.com/candrews/HttpResponseCache</url>
 	<inceptionYear>2012</inceptionYear>
 
 	<developers>
@@ -24,7 +24,7 @@
 			<name>Craig Andrews</name>
 			<email>candrews@integralblue.com</email>
 			<id>candrews</id>
-			<url>http://candrews.integralblue.com.com</url>
+			<url>http://candrews.integralblue.com</url>
 			<timezone>-5</timezone>
 			<roles>
 				<role>developer</role>
@@ -41,15 +41,20 @@
 	</licenses>
 
 	<scm>
-		<url>https://gitorious.org/httpresponsecachecompat</url>
-		<connection>scm:git:git://gitorious.org/httpresponsecachecompat/main.git</connection>
-		<developerConnection>scm:git:git@gitorious.org:httpresponsecachecompat/main.git</developerConnection>
+		<url>https://github.com/candrews/HttpResponseCache</url>
+		<connection>scm:git:git://github.com/candrews/HttpResponseCache.git</connection>
+		<developerConnection>scm:git:git@github.com:candrews/HttpResponseCache.git</developerConnection>
 	</scm>
 
 	<organization>
 		<name>Craig Andrews</name>
 		<url>http://candrews.integralblue.com</url>
 	</organization>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/candrews/HttpResponseCache/issues</url>
+	</issueManagement>
 
 	<properties>
 		<java.version>1.5</java.version>
