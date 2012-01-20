@@ -76,6 +76,18 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>1.46</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google</groupId>
+			<artifactId>mockwebserver</artifactId>
+			<version>1.0.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
