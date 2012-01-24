@@ -62,12 +62,19 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
 import javax.net.ssl.HttpsURLConnection;
 import junit.framework.TestCase;
+
+import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestSSLContext;
 
 public final class HttpResponseCacheTest extends TestCase {
     private MockWebServer server = new MockWebServer();
     private HttpResponseCache cache;
     private final CookieManager cookieManager = new CookieManager();
+    
+    static {
+    	//URL.setURLStreamHandlerFactory can only be called once per VM
+        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactoryImpl());
+    }
 
     @Override protected void setUp() throws Exception {
         super.setUp();
