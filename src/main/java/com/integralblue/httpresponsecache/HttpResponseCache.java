@@ -28,7 +28,10 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
+import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
 import com.integralblue.httpresponsecache.compat.libcore.io.IoUtils;
 import com.jakewharton.DiskLruCache;
 
@@ -181,6 +184,7 @@ public final class HttpResponseCache extends ResponseCache implements Closeable 
         HttpResponseCache result = new HttpResponseCache(directory, maxSize);
         ResponseCache.setDefault(result);
         URL.setURLStreamHandlerFactory(new URLStreamHandlerFactoryImpl());
+        HttpsURLConnection.setDefaultHostnameVerifier(new DefaultHostnameVerifier());
         return result;
     }
 

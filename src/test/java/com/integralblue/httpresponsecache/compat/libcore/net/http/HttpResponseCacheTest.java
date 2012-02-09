@@ -64,6 +64,7 @@ import javax.net.ssl.HttpsURLConnection;
 import junit.framework.TestCase;
 
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
+import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
 import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestSSLContext;
 
 public final class HttpResponseCacheTest extends TestCase {
@@ -74,6 +75,7 @@ public final class HttpResponseCacheTest extends TestCase {
     static {
     	//URL.setURLStreamHandlerFactory can only be called once per VM
         URL.setURLStreamHandlerFactory(new URLStreamHandlerFactoryImpl());
+        HttpsURLConnection.setDefaultHostnameVerifier(new DefaultHostnameVerifier());
     }
 
     @Override protected void setUp() throws Exception {
