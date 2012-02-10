@@ -8,8 +8,8 @@ public final class System {
     public static final void logW(String msg){
         LOGGER.warning(msg);
     }
-    
+
     public static void logI(String message, Throwable th) {
-    	LOGGER.info(message + ": " + th);
+        LOGGER.info(message + ": " + th);
     }
 }
