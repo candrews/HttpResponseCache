@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.net.http;
+package com.integralblue.httpresponsecache.compat.java.net;
 
-enum ResponseSource {
+//Note that in AOSP this class is package scope.
+//Because of how I've done the class/package renaming,
+//the scope needed to be expanded. It really doesn't
+//matter in the context of this library, though.
+public enum ResponseSource {
 
     /**
      * Return the response from the cache immediately.

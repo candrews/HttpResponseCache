@@ -29,8 +29,10 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
+import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import java.net.HttpURLConnection;
 import java.net.ResponseCache;
+import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
 import java.net.SecureCacheResponse;
 import java.net.URI;
 import java.net.URLConnection;
@@ -61,7 +63,7 @@ import com.jakewharton.DiskLruCache;
  * {@code android.net.HttpResponseCache}, the stable, documented front end for
  * this.
  */
-public final class HttpResponseCache extends ResponseCache {
+public final class HttpResponseCache extends ResponseCache implements ExtendedResponseCache {
     // TODO: add APIs to iterate the cache?
     private static final int VERSION = 201105;
     private static final int ENTRY_METADATA = 0;
@@ -214,7 +216,7 @@ public final class HttpResponseCache extends ResponseCache {
         return writeSuccessCount;
     }
 
-    synchronized void trackResponse(ResponseSource source) {
+    public synchronized void trackResponse(ResponseSource source) {
         requestCount++;
 
         switch (source) {
@@ -228,7 +230,7 @@ public final class HttpResponseCache extends ResponseCache {
         }
     }
 
-    synchronized void trackConditionalCacheHit() {
+    public synchronized void trackConditionalCacheHit() {
         hitCount++;
     }
 

@@ -25,9 +25,11 @@ import java.io.OutputStream;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
 import java.net.CookieHandler;
+import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.ResponseCache;
+import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -214,8 +216,8 @@ public class HttpEngine {
 
         prepareRawRequestHeaders();
         initResponseSource();
-        if (responseCache instanceof HttpResponseCache) {
-            ((HttpResponseCache) responseCache).trackResponse(responseSource);
+        if (responseCache instanceof ExtendedResponseCache) {
+            ((ExtendedResponseCache) responseCache).trackResponse(responseSource);
         }
 
         /*

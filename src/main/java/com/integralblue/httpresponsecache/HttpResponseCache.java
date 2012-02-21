@@ -21,7 +21,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
+import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import java.net.ResponseCache;
+import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
+
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -139,7 +142,8 @@ import com.jakewharton.DiskLruCache;
  *         connection.addRequestProperty("Cache-Control", "max-stale=" + maxStale);
  * }</pre>
  */
-public final class HttpResponseCache extends ResponseCache implements Closeable {
+public final class HttpResponseCache extends ResponseCache
+        implements Closeable, ExtendedResponseCache {
 
     private final com.integralblue.httpresponsecache.compat.libcore.net.http.HttpResponseCache delegate;
 
@@ -250,6 +254,16 @@ public final class HttpResponseCache extends ResponseCache implements Closeable 
      */
     public int getRequestCount() {
         return delegate.getRequestCount();
+    }
+
+    /** @hide */
+    public void trackResponse(ResponseSource source) {
+        delegate.trackResponse(source);
+    }
+
+    /** @hide */
+    public void trackConditionalCacheHit() {
+        delegate.trackConditionalCacheHit();
     }
 
     /***

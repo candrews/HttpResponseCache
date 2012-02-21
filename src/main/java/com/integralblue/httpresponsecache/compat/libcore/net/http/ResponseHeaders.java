@@ -17,6 +17,7 @@
 package com.integralblue.httpresponsecache.compat.libcore.net.http;
 
 import java.net.HttpURLConnection;
+import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Date;

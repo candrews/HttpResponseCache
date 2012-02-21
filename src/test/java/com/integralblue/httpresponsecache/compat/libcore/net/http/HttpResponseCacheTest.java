@@ -16,10 +16,8 @@
 
 package com.integralblue.httpresponsecache.compat.libcore.net.http;
 
-import com.google.mockwebserver.MockResponse;
-import com.google.mockwebserver.MockWebServer;
-import com.google.mockwebserver.RecordedRequest;
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_END;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationHandler;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
 import java.net.CookieHandler;
@@ -49,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -60,9 +56,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
+
 import javax.net.ssl.HttpsURLConnection;
+
 import junit.framework.TestCase;
 
+import com.google.mockwebserver.MockResponse;
+import com.google.mockwebserver.MockWebServer;
+import com.google.mockwebserver.RecordedRequest;
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
 import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestSSLContext;
@@ -70,6 +71,7 @@ import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestSSLCo
 public final class HttpResponseCacheTest extends TestCase {
     private MockWebServer server = new MockWebServer();
     private HttpResponseCache cache;
+    private File cacheDir;
     private final CookieManager cookieManager = new CookieManager();
     
     static {
@@ -82,7 +84,7 @@ public final class HttpResponseCacheTest extends TestCase {
         super.setUp();
 
         String tmp = System.getProperty("java.io.tmpdir");
-        File cacheDir = new File(tmp, "HttpCache-" + UUID.randomUUID());
+        cacheDir = new File(tmp, "HttpCache-" + UUID.randomUUID());
         cache = new HttpResponseCache(cacheDir, Integer.MAX_VALUE);
         ResponseCache.setDefault(cache);
         CookieHandler.setDefault(cookieManager);
@@ -1810,5 +1812,31 @@ public final class HttpResponseCacheTest extends TestCase {
             }
             return response;
         }
+    }
+
+    /**
+     * Make sure that statistics tracking are wired all the way through the
+     * wrapper class. http://code.google.com/p/android/issues/detail?id=25418
+     */
+    public void testStatisticsTracking() throws Exception {
+        server.enqueue(new MockResponse()
+                .addHeader("Cache-Control: max-age=60")
+                .setBody("A"));
+        server.play();
+
+        URLConnection c1 = server.getUrl("/").openConnection();
+        assertEquals('A', c1.getInputStream().read());
+        assertEquals(1, cache.getRequestCount());
+        assertEquals(1, cache.getNetworkCount());
+        assertEquals(0, cache.getHitCount());
+
+        URLConnection c2 = server.getUrl("/").openConnection();
+        assertEquals('A', c2.getInputStream().read());
+
+        URLConnection c3 = server.getUrl("/").openConnection();
+        assertEquals('A', c3.getInputStream().read());
+        assertEquals(3, cache.getRequestCount());
+        assertEquals(1, cache.getNetworkCount());
+        assertEquals(2, cache.getHitCount());
     }
 }
