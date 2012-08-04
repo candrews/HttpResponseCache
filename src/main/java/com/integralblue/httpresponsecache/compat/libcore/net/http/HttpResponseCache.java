@@ -29,14 +29,11 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
-import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import java.net.HttpURLConnection;
 import java.net.ResponseCache;
-import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
 import java.net.SecureCacheResponse;
 import java.net.URI;
 import java.net.URLConnection;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -53,6 +50,8 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 
 import com.integralblue.httpresponsecache.compat.Charsets;
 import com.integralblue.httpresponsecache.compat.Strings;
+import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
+import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
 import com.integralblue.httpresponsecache.compat.libcore.io.Base64;
 import com.integralblue.httpresponsecache.compat.libcore.io.IoUtils;
 import com.integralblue.httpresponsecache.compat.libcore.io.Streams;
@@ -114,23 +113,9 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
             return null;
         }
 
-        InputStream body = newBodyInputStream(snapshot);
         return entry.isHttps()
-                ? entry.newSecureCacheResponse(body)
-                : entry.newCacheResponse(body);
-    }
-
-    /**
-     * Returns an input stream that reads the body of a snapshot, closing the
-     * snapshot when the stream is closed.
-     */
-    private InputStream newBodyInputStream(final DiskLruCache.Snapshot snapshot) {
-        return new FilterInputStream(snapshot.getInputStream(ENTRY_BODY)) {
-            @Override public void close() throws IOException {
-                snapshot.close();
-                super.close();
-            }
-        };
+                ? new EntrySecureCacheResponse(entry, snapshot)
+                : new EntryCacheResponse(entry, snapshot);
     }
 
     @Override public CacheRequest put(URI uri, URLConnection urlConnection) throws IOException {
@@ -183,14 +168,46 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
             entry.writeTo(editor);
             return new CacheRequestImpl(editor);
         } catch (IOException e) {
-            // Give up because the cache cannot be written.
-            try {
-                if (editor != null) {
-                    editor.abort();
-                }
-            } catch (IOException ignored) {
-            }
+            abortQuietly(editor);
             return null;
+        }
+    }
+
+    /**
+     * Handles a conditional request hit by updating the stored cache response
+     * with the headers from {@code httpConnection}. The cached response body is
+     * not updated. If the stored response has changed since {@code
+     * conditionalCacheHit} was returned, this does nothing.
+     */
+    public void update(CacheResponse conditionalCacheHit, HttpURLConnection httpConnection) {
+        HttpEngine httpEngine = getHttpEngine(httpConnection);
+        URI uri = httpEngine.getUri();
+        ResponseHeaders response = httpEngine.getResponseHeaders();
+        RawHeaders varyHeaders = httpEngine.getRequestHeaders().getHeaders()
+                .getAll(response.getVaryFields());
+        Entry entry = new Entry(uri, varyHeaders, httpConnection);
+        DiskLruCache.Snapshot snapshot = (conditionalCacheHit instanceof EntryCacheResponse)
+                ? ((EntryCacheResponse) conditionalCacheHit).snapshot
+                : ((EntrySecureCacheResponse) conditionalCacheHit).snapshot;
+        DiskLruCache.Editor editor = null;
+        try {
+            editor = snapshot.edit(); // returns null if snapshot is not current
+            if (editor != null) {
+                entry.writeTo(editor);
+                editor.commit();
+            }
+        } catch (IOException e) {
+            abortQuietly(editor);
+        }
+    }
+
+    private void abortQuietly(DiskLruCache.Editor editor) {
+        // Give up because the cache cannot be written.
+        try {
+            if (editor != null) {
+                editor.abort();
+            }
+        } catch (IOException ignored) {
         }
     }
 
@@ -266,6 +283,13 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                     }
                     super.close();
                     editor.commit();
+                }
+
+                @Override
+                public void write(byte[] buffer, int offset, int length) throws IOException {
+                    // Since we don't override "write(int oneByte)", we can write directly to "out"
+                    // and avoid the inefficient implementation from the FilterOutputStream.
+                    out.write(buffer, offset, length);
                 }
             };
         }
@@ -364,7 +388,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
 
                 if (isHttps()) {
                     String blank = Streams.readAsciiLine(in);
-                    if (!Strings.isEmpty(blank)) {
+                    if (!blank.isEmpty()) {
                         throw new IOException("expected \"\" but was \"" + blank + "\"");
                     }
                     cipherSuite = Streams.readAsciiLine(in);
@@ -404,7 +428,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
         }
 
         public void writeTo(DiskLruCache.Editor editor) throws IOException {
-            OutputStream out = editor.newOutputStream(0);
+            OutputStream out = editor.newOutputStream(ENTRY_METADATA);
             Writer writer = new BufferedWriter(new OutputStreamWriter(out, Charsets.UTF_8));
 
             writer.write(uri + '\n');
@@ -454,13 +478,13 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                 Certificate[] result = new Certificate[length];
                 for (int i = 0; i < result.length; i++) {
                     String line = Streams.readAsciiLine(in);
-                    byte[] bytes = Base64.decode(Strings.getBytes(line,Charsets.US_ASCII));
+                    byte[] bytes = Base64.decode(line.getBytes(Charsets.US_ASCII));
                     result[i] = certificateFactory.generateCertificate(
                             new ByteArrayInputStream(bytes));
                 }
                 return result;
             } catch (CertificateException e) {
-                throw new com.integralblue.httpresponsecache.compat.java.io.IOException(e);
+                throw new IOException(e);
             }
         }
 
@@ -477,7 +501,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                     writer.write(line + '\n');
                 }
             } catch (CertificateEncodingException e) {
-                throw new com.integralblue.httpresponsecache.compat.java.io.IOException(e);
+                throw new IOException(e);
             }
         }
 
@@ -488,62 +512,91 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                     && new ResponseHeaders(uri, responseHeaders)
                             .varyMatches(varyHeaders.toMultimap(), requestHeaders);
         }
+    }
 
-        public CacheResponse newCacheResponse(final InputStream in) {
-            return new CacheResponse() {
-                @Override public Map<String, List<String>> getHeaders() {
-                    return responseHeaders.toMultimap();
-                }
+    /**
+     * Returns an input stream that reads the body of a snapshot, closing the
+     * snapshot when the stream is closed.
+     */
+    private static InputStream newBodyInputStream(final DiskLruCache.Snapshot snapshot) {
+        return new FilterInputStream(snapshot.getInputStream(ENTRY_BODY)) {
+            @Override public void close() throws IOException {
+                snapshot.close();
+                super.close();
+            }
+        };
+    }
 
-                @Override public InputStream getBody() {
-                    return in;
-                }
-            };
+    static class EntryCacheResponse extends CacheResponse {
+        private final Entry entry;
+        private final DiskLruCache.Snapshot snapshot;
+        private final InputStream in;
+
+        public EntryCacheResponse(Entry entry, DiskLruCache.Snapshot snapshot) {
+            this.entry = entry;
+            this.snapshot = snapshot;
+            this.in = newBodyInputStream(snapshot);
         }
 
-        public SecureCacheResponse newSecureCacheResponse(final InputStream in) {
-            return new SecureCacheResponse() {
-                @Override public Map<String, List<String>> getHeaders() {
-                    return responseHeaders.toMultimap();
-                }
+        @Override public Map<String, List<String>> getHeaders() {
+            return entry.responseHeaders.toMultimap();
+        }
 
-                @Override public InputStream getBody() {
-                    return in;
-                }
+        @Override public InputStream getBody() {
+            return in;
+        }
+    }
 
-                @Override public String getCipherSuite() {
-                    return cipherSuite;
-                }
+    static class EntrySecureCacheResponse extends SecureCacheResponse {
+        private final Entry entry;
+        private final DiskLruCache.Snapshot snapshot;
+        private final InputStream in;
 
-                @Override public List<Certificate> getServerCertificateChain()
-                        throws SSLPeerUnverifiedException {
-                    if (peerCertificates == null || peerCertificates.length == 0) {
-                        throw new SSLPeerUnverifiedException(null);
-                    }
-                    return Arrays.asList(peerCertificates.clone());
-                }
+        public EntrySecureCacheResponse(Entry entry, DiskLruCache.Snapshot snapshot) {
+            this.entry = entry;
+            this.snapshot = snapshot;
+            this.in = newBodyInputStream(snapshot);
+        }
 
-                @Override public Principal getPeerPrincipal() throws SSLPeerUnverifiedException {
-                    if (peerCertificates == null || peerCertificates.length == 0) {
-                        throw new SSLPeerUnverifiedException(null);
-                    }
-                    return ((X509Certificate) peerCertificates[0]).getSubjectX500Principal();
-                }
+        @Override public Map<String, List<String>> getHeaders() {
+            return entry.responseHeaders.toMultimap();
+        }
 
-                @Override public List<Certificate> getLocalCertificateChain() {
-                    if (localCertificates == null || localCertificates.length == 0) {
-                        return null;
-                    }
-                    return Arrays.asList(localCertificates.clone());
-                }
+        @Override public InputStream getBody() {
+            return in;
+        }
 
-                @Override public Principal getLocalPrincipal() {
-                    if (localCertificates == null || localCertificates.length == 0) {
-                        return null;
-                    }
-                    return ((X509Certificate) localCertificates[0]).getSubjectX500Principal();
-                }
-            };
+        @Override public String getCipherSuite() {
+            return entry.cipherSuite;
+        }
+
+        @Override public List<Certificate> getServerCertificateChain()
+                throws SSLPeerUnverifiedException {
+            if (entry.peerCertificates == null || entry.peerCertificates.length == 0) {
+                throw new SSLPeerUnverifiedException(null);
+            }
+            return Arrays.asList(entry.peerCertificates.clone());
+        }
+
+        @Override public Principal getPeerPrincipal() throws SSLPeerUnverifiedException {
+            if (entry.peerCertificates == null || entry.peerCertificates.length == 0) {
+                throw new SSLPeerUnverifiedException(null);
+            }
+            return ((X509Certificate) entry.peerCertificates[0]).getSubjectX500Principal();
+        }
+
+        @Override public List<Certificate> getLocalCertificateChain() {
+            if (entry.localCertificates == null || entry.localCertificates.length == 0) {
+                return null;
+            }
+            return Arrays.asList(entry.localCertificates.clone());
+        }
+
+        @Override public Principal getLocalPrincipal() {
+            if (entry.localCertificates == null || entry.localCertificates.length == 0) {
+                return null;
+            }
+            return ((X509Certificate) entry.localCertificates[0]).getSubjectX500Principal();
         }
     }
 }

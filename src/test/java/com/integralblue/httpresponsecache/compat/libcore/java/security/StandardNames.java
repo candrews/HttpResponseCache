@@ -172,6 +172,8 @@ public final class StandardNames extends Assert {
         provide("Policy", "JavaPolicy");
         provide("SSLContext", "SSLv3");
         provide("SSLContext", "TLSv1");
+        provide("SSLContext", "TLSv1.1");
+        provide("SSLContext", "TLSv1.2");
         provide("SecretKeyFactory", "DES");
         provide("SecretKeyFactory", "DESede");
         provide("SecretKeyFactory", "PBEWithMD5AndDES");
@@ -270,6 +272,12 @@ public final class StandardNames extends Assert {
             provide("Signature", "SHA256WITHECDSA");
             provide("Signature", "SHA384WITHECDSA");
             provide("Signature", "SHA512WITHECDSA");
+        }
+
+        // Documented as Standard Names, but do not exit in RI 6
+        if (IS_RI) {
+            unprovide("SSLContext", "TLSv1.1");
+            unprovide("SSLContext", "TLSv1.2");
         }
 
         // Fixups for dalvik
@@ -448,7 +456,9 @@ public final class StandardNames extends Assert {
         // "SSLv2",
         "SSLv3",
         "TLS",
-        "TLSv1"));
+        "TLSv1",
+        "TLSv1.1",
+        "TLSv1.2"));
     public static final String SSL_CONTEXT_PROTOCOL_DEFAULT = "TLS";
 
     public static final Set<String> KEY_TYPES = new HashSet<String>(Arrays.asList(
@@ -464,7 +474,9 @@ public final class StandardNames extends Assert {
     public static final Set<String> SSL_SOCKET_PROTOCOLS = new HashSet<String>(Arrays.asList(
         // "SSLv2",
         "SSLv3",
-        "TLSv1"));
+        "TLSv1",
+        "TLSv1.1",
+        "TLSv1.2"));
     static {
         if (IS_RI) {
             /* Even though we use OpenSSL's SSLv23_method which
@@ -474,9 +486,15 @@ public final class StandardNames extends Assert {
              * do to disable general use of SSLv2.
              */
             SSL_SOCKET_PROTOCOLS.add("SSLv2Hello");
+        }
+    }
 
-            SSL_SOCKET_PROTOCOLS.add("TLSv1.1");
-            SSL_SOCKET_PROTOCOLS.add("TLSv1.2");
+    public static final Set<String> SSL_SOCKET_PROTOCOLS_SSLENGINE = new HashSet<String>(SSL_SOCKET_PROTOCOLS);
+    static {
+        // No TLSv1.1 or TLSv1.2 support on SSLEngine based provider
+        if (!IS_RI) {
+            SSL_SOCKET_PROTOCOLS_SSLENGINE.remove("TLSv1.1");
+            SSL_SOCKET_PROTOCOLS_SSLENGINE.remove("TLSv1.2");
         }
     }
 
@@ -798,7 +816,7 @@ public final class StandardNames extends Assert {
         assertTrue(protocols.length != 0);
 
         // Make sure all protocols names are expected
-        Set remainingProtocols = new HashSet<String>(StandardNames.SSL_SOCKET_PROTOCOLS);
+        Set remainingProtocols = new HashSet<String>(expected);
         Set unknownProtocols = new HashSet<String>();
         for (String protocol : protocols) {
             if (!remainingProtocols.remove(protocol)) {

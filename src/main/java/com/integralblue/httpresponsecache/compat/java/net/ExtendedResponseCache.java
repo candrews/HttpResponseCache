@@ -16,6 +16,9 @@
 
 package com.integralblue.httpresponsecache.compat.java.net;
 
+import java.net.CacheResponse;
+import java.net.HttpURLConnection;
+
 /**
  * A response cache that supports statistics tracking and updating stored
  * responses. Implementations of {@link ResponseCache} should implement this
@@ -42,4 +45,10 @@ public interface ExtendedResponseCache {
      * @hide
      */
     void trackConditionalCacheHit();
+
+    /**
+     * Updates stored HTTP headers using a hit on a conditional GET.
+     * @hide
+     */
+    void update(CacheResponse conditionalCacheHit, HttpURLConnection httpConnection);
 }

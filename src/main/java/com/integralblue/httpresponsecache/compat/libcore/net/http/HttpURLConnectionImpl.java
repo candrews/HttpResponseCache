@@ -31,15 +31,15 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.SocketPermission;
 import java.net.URL;
-
 import java.security.Permission;
 import java.util.List;
 import java.util.Map;
 
 import com.integralblue.httpresponsecache.compat.Charsets;
-import com.integralblue.httpresponsecache.compat.Strings;
+import com.integralblue.httpresponsecache.compat.URIs;
 import com.integralblue.httpresponsecache.compat.URLs;
 import com.integralblue.httpresponsecache.compat.libcore.io.Base64;
+import com.integralblue.httpresponsecache.compat.libcore.io.IoUtils;
 
 /**
  * This implementation uses HttpEngine to send requests and receive responses.
@@ -91,6 +91,14 @@ class HttpURLConnectionImpl extends HttpURLConnection {
     @Override public final void disconnect() {
         // Calling disconnect() before a connection exists should have no effect.
         if (httpEngine != null) {
+            // We close the response body here instead of in
+            // HttpEngine.release because that is called when input
+            // has been completely read from the underlying socket.
+            // However the response body can be a GZIPInputStream that
+            // still has unread data.
+            if (httpEngine.hasResponse()) {
+                IoUtils.closeQuietly(httpEngine.getResponseBody());
+            }
             httpEngine.release(false);
         }
     }
@@ -272,53 +280,64 @@ class HttpURLConnectionImpl extends HttpURLConnection {
             return httpEngine;
         }
 
-        try {
-            while (true) {
+        while (true) {
+            try {
                 httpEngine.sendRequest();
                 httpEngine.readResponse();
-
-                Retry retry = processResponseHeaders();
-                if (retry == Retry.NONE) {
-                    httpEngine.automaticallyReleaseConnectionToPool();
-                    break;
-                }
-
+            } catch (IOException e) {
                 /*
-                 * The first request was insufficient. Prepare for another...
+                 * If the connection was recycled, its staleness may have caused
+                 * the failure. Silently retry with a different connection.
                  */
-                String retryMethod = method;
                 OutputStream requestBody = httpEngine.getRequestBody();
-
-                /*
-                 * Although RFC 2616 10.3.2 specifies that a HTTP_MOVED_PERM
-                 * redirect should keep the same method, Chrome, Firefox and the
-                 * RI all issue GETs when following any redirect.
-                 */
-                int responseCode = getResponseCode();
-                if (responseCode == HTTP_MULT_CHOICE || responseCode == HTTP_MOVED_PERM
-                        || responseCode == HTTP_MOVED_TEMP || responseCode == HTTP_SEE_OTHER) {
-                    retryMethod = HttpEngine.GET;
-                    requestBody = null;
+                if (httpEngine.hasRecycledConnection()
+                        && (requestBody == null || requestBody instanceof RetryableOutputStream)) {
+                    httpEngine.release(false);
+                    httpEngine = newHttpEngine(method, rawRequestHeaders, null,
+                            (RetryableOutputStream) requestBody);
+                    continue;
                 }
-
-                if (requestBody != null && !(requestBody instanceof RetryableOutputStream)) {
-                    throw new HttpRetryException("Cannot retry streamed HTTP body",
-                            httpEngine.getResponseCode());
-                }
-
-                if (retry == Retry.DIFFERENT_CONNECTION) {
-                    httpEngine.automaticallyReleaseConnectionToPool();
-                }
-
-                httpEngine.release(true);
-
-                httpEngine = newHttpEngine(retryMethod, rawRequestHeaders,
-                        httpEngine.getConnection(), (RetryableOutputStream) requestBody);
+                httpEngineFailure = e;
+                throw e;
             }
-            return httpEngine;
-        } catch (IOException e) {
-            httpEngineFailure = e;
-            throw e;
+
+            Retry retry = processResponseHeaders();
+            if (retry == Retry.NONE) {
+                httpEngine.automaticallyReleaseConnectionToPool();
+                return httpEngine;
+            }
+
+            /*
+             * The first request was insufficient. Prepare for another...
+             */
+            String retryMethod = method;
+            OutputStream requestBody = httpEngine.getRequestBody();
+
+            /*
+             * Although RFC 2616 10.3.2 specifies that a HTTP_MOVED_PERM
+             * redirect should keep the same method, Chrome, Firefox and the
+             * RI all issue GETs when following any redirect.
+             */
+            int responseCode = getResponseCode();
+            if (responseCode == HTTP_MULT_CHOICE || responseCode == HTTP_MOVED_PERM
+                    || responseCode == HTTP_MOVED_TEMP || responseCode == HTTP_SEE_OTHER) {
+                retryMethod = HttpEngine.GET;
+                requestBody = null;
+            }
+
+            if (requestBody != null && !(requestBody instanceof RetryableOutputStream)) {
+                throw new HttpRetryException("Cannot retry streamed HTTP body",
+                        httpEngine.getResponseCode());
+            }
+
+            if (retry == Retry.DIFFERENT_CONNECTION) {
+                httpEngine.automaticallyReleaseConnectionToPool();
+            }
+
+            httpEngine.release(true);
+
+            httpEngine = newHttpEngine(retryMethod, rawRequestHeaders,
+                    httpEngine.getConnection(), (RetryableOutputStream) requestBody);
         }
     }
 
@@ -394,13 +413,10 @@ class HttpURLConnectionImpl extends HttpURLConnection {
         }
 
         // keep asking for username/password until authorized
-        String challenge = responseCode == HTTP_PROXY_AUTH
-                ? response.getProxyAuthenticate()
-                : response.getWwwAuthenticate();
-        if (challenge == null) {
-            throw new IOException("Received authentication challenge is null");
-        }
-        String credentials = getAuthorizationCredentials(challenge);
+        String challengeHeader = responseCode == HTTP_PROXY_AUTH
+                ? "Proxy-Authenticate"
+                : "WWW-Authenticate";
+        String credentials = getAuthorizationCredentials(response.getHeaders(), challengeHeader);
         if (credentials == null) {
             return false; // could not find credentials, end request cycle
         }
@@ -416,31 +432,30 @@ class HttpURLConnectionImpl extends HttpURLConnection {
     /**
      * Returns the authorization credentials on the base of provided challenge.
      */
-    private String getAuthorizationCredentials(String challenge) throws IOException {
-        int idx = challenge.indexOf(" ");
-        if (idx == -1) {
-            return null;
+    private String getAuthorizationCredentials(RawHeaders responseHeaders, String challengeHeader)
+            throws IOException {
+        List<Challenge> challenges = HeaderParser.parseChallenges(responseHeaders, challengeHeader);
+        if (challenges.isEmpty()) {
+            throw new IOException("No authentication challenges found");
         }
-        String scheme = challenge.substring(0, idx);
-        int realm = challenge.indexOf("realm=\"") + 7;
-        String prompt = null;
-        if (realm != -1) {
-            int end = challenge.indexOf('"', realm);
-            if (end != -1) {
-                prompt = challenge.substring(realm, end);
+
+        for (Challenge challenge : challenges) {
+            // use the global authenticator to get the password
+            PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(
+                    getConnectToInetAddress(), getConnectToPort(), url.getProtocol(),
+                    challenge.realm, challenge.scheme);
+            if (auth == null) {
+                continue;
             }
+
+            // base64 encode the username and password
+            String usernameAndPassword = auth.getUserName() + ":" + new String(auth.getPassword());
+            byte[] bytes = usernameAndPassword.getBytes(Charsets.ISO_8859_1);
+            String encoded = Base64.encode(bytes);
+            return challenge.scheme + " " + encoded;
         }
-        // use the global authenticator to get the password
-        PasswordAuthentication pa = Authenticator.requestPasswordAuthentication(
-                getConnectToInetAddress(), getConnectToPort(), url.getProtocol(), prompt, scheme);
-        if (pa == null) {
-            return null;
-        }
-        // base64 encode the username and password
-        String usernameAndPassword = pa.getUserName() + ":" + new String(pa.getPassword());
-        byte[] bytes = Strings.getBytes(usernameAndPassword,Charsets.ISO_8859_1);
-        String encoded = Base64.encode(bytes);
-        return scheme + " " + encoded;
+
+        return null;
     }
 
     private InetAddress getConnectToInetAddress() throws IOException {

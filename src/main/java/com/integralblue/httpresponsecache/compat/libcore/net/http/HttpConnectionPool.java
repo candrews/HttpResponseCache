@@ -62,14 +62,19 @@ final class HttpConnectionPool {
         // First try to reuse an existing HTTP connection.
         synchronized (connectionPool) {
             List<HttpConnection> connections = connectionPool.get(address);
-            if (connections != null) {
-                while (!connections.isEmpty()) {
-                    HttpConnection connection = connections.remove(connections.size() - 1);
-                    if (!connection.isStale()) { // TODO: this op does I/O!
-                        return connection;
-                    }
+            while (connections != null) {
+                HttpConnection connection = connections.remove(connections.size() - 1);
+                if (connections.isEmpty()) {
+                    connectionPool.remove(address);
+                    connections = null;
                 }
-                connectionPool.remove(address);
+                if (connection.isEligibleForRecycling()) {
+                // I can't figure out how to support socket tagging in this library :-(
+//                    // Since Socket is recycled, re-tag before using
+//                    Socket socket = connection.getSocket();
+//                    SocketTagger.get().tag(socket);
+                    return connection;
+                }
             }
         }
 
@@ -91,6 +96,7 @@ final class HttpConnectionPool {
                     connectionPool.put(address, connections);
                 }
                 if (connections.size() < maxConnections) {
+                	connection.setRecycled();
                     connections.add(connection);
                     return; // keep the connection open
                 }

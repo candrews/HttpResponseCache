@@ -16,16 +16,6 @@
 
 package com.integralblue.httpresponsecache.compat.libcore.java.security;
 
-import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.x509.BasicConstraints;
-import org.bouncycastle.asn1.x509.GeneralName;
-import org.bouncycastle.asn1.x509.GeneralNames;
-import org.bouncycastle.asn1.x509.GeneralSubtree;
-import org.bouncycastle.asn1.x509.KeyUsage;
-import org.bouncycastle.asn1.x509.NameConstraints;
-import org.bouncycastle.asn1.x509.X509Extensions;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
 import java.math.BigInteger;
@@ -61,9 +51,22 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.security.auth.x500.X500Principal;
-import junit.framework.Assert;
+
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x509.BasicConstraints;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.asn1.x509.GeneralSubtree;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.NameConstraints;
+import org.bouncycastle.asn1.x509.X509Extensions;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.x509.X509V3CertificateGenerator;
+
 import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestKeyManager;
 import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestTrustManager;
+
+import junit.framework.Assert;
 
 /**
  * TestKeyStore is a convenience class for other tests that
@@ -387,7 +390,8 @@ public final class TestKeyStore extends Assert {
                 // 1.) we make the keys
                 int keySize;
                 if (keyAlgorithm.equals("RSA")) {
-                    keySize = StandardNames.IS_RI ? 1024 : 512; // 512 breaks SSL_RSA_EXPORT_* on RI
+                    // 512 breaks SSL_RSA_EXPORT_* on RI and TLS_ECDHE_RSA_WITH_RC4_128_SHA for us
+                    keySize =  1024;
                 } else if (keyAlgorithm.equals("DSA")) {
                     keySize = 512;
                 } else if (keyAlgorithm.equals("EC")) {

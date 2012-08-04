@@ -25,6 +25,7 @@ import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import java.net.ResponseCache;
 import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -264,6 +265,11 @@ public final class HttpResponseCache extends ResponseCache
     /** @hide */
     public void trackConditionalCacheHit() {
         delegate.trackConditionalCacheHit();
+    }
+
+    /** @hide */
+    public void update(CacheResponse conditionalCacheHit, HttpURLConnection connection) {
+        delegate.update(conditionalCacheHit, connection);
     }
 
     /***

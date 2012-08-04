@@ -35,6 +35,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import com.integralblue.httpresponsecache.compat.URLs;
 
@@ -338,8 +339,8 @@ final class HttpsURLConnectionImpl extends HttpsURLConnection {
     }
 
     @Override
-    public void setConnectTimeout(int timeout) {
-        delegate.setConnectTimeout(timeout);
+    public void setConnectTimeout(int setConnectTimeout) {
+        delegate.setConnectTimeout(setConnectTimeout);
     }
 
     @Override
@@ -348,8 +349,8 @@ final class HttpsURLConnectionImpl extends HttpsURLConnection {
     }
 
     @Override
-    public void setReadTimeout(int timeout) {
-        delegate.setReadTimeout(timeout);
+    public void setReadTimeout(int timeoutMillis) {
+        delegate.setReadTimeout(timeoutMillis);
     }
 
     @Override
@@ -519,6 +520,12 @@ final class HttpsURLConnectionImpl extends HttpsURLConnection {
         @Override protected boolean includeAuthorityInRequestLine() {
             // Even if there is a proxy, it isn't involved. Always request just the file.
             return false;
+        }
+
+        // Android's HttpsUrlConnection has a getSslSocketFactory method, while Java's does not.
+        // So in Android, this is @Override, but here, it cannot be.
+        protected SSLSocketFactory getSslSocketFactory() {
+        	return enclosing.getSSLSocketFactory();
         }
 
         @Override protected HttpURLConnection getHttpConnectionToCache() {

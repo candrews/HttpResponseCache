@@ -17,6 +17,8 @@
 package com.integralblue.httpresponsecache.compat.libcore.net.http;
 
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import junit.framework.TestCase;
 
@@ -183,5 +185,60 @@ public final class ParsedHeadersTest extends TestCase {
         headers.add("Cache-Control", "MAX-AGE=-2");
         RequestHeaders parsedHeaders = new RequestHeaders(uri, headers);
         assertEquals(0, parsedHeaders.getMaxAgeSeconds());
+    }
+
+    public void testParseChallengesWithCommaInRealm() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "s1 realm=\"ab,cd\", s2 realm=\"ef,gh\"");
+        assertEquals(Arrays.asList(new Challenge("s1", "ab,cd"), new Challenge("s2", "ef,gh")),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
+    }
+
+    public void testParseChallengesWithMultipleHeaders() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "s1 realm=\"abc\"");
+        headers.add("WWW-Authenticate", "s2 realm=\"def\"");
+        assertEquals(Arrays.asList(new Challenge("s1", "abc"), new Challenge("s2", "def")),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
+    }
+
+    public void testParseChallengesWithExtraWhitespace() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "  s1  realm=\"a\"  ,  s2  realm=\"b\",  ");
+        assertEquals(Arrays.asList(new Challenge("s1", "a"), new Challenge("s2", "b")),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
+    }
+
+    public void testParseChallengesWithMissingRealm() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "Basic");
+        assertEquals(Collections.<Challenge>emptyList(),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
+    }
+
+    public void testParseChallengesWithEmptyRealm() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "Basic realm=\"\"");
+        assertEquals(Arrays.asList(new Challenge("Basic", "")),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
+    }
+
+    public void testParseChallengesWithMissingScheme() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "realm=\"a\"");
+        assertEquals(Collections.<Challenge>emptyList(),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
+    }
+
+    // http://code.google.com/p/android/issues/detail?id=11140
+    public void testParseChallengesWithManyParameters() {
+        RawHeaders headers = new RawHeaders();
+        headers.add("WWW-Authenticate", "Digest realm=\"abc\","
+                + " qop=\"auth,auth-int\","
+                + " nonce=\"dcd98b7102dd2f0e8b11d0f600bfb0c093\","
+                + " opaque=\"5ccc069c403ebaf9f0171e9517f40e41\","
+                + " Basic realm=\"def\"");
+        assertEquals(Arrays.asList(new Challenge("Digest", "abc"), new Challenge("Basic", "def")),
+                HeaderParser.parseChallenges(headers, "WWW-Authenticate"));
     }
 }
