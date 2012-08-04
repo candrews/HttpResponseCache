@@ -466,6 +466,9 @@ public final class ResponseHeaders {
         RawHeaders result = new RawHeaders();
         result.setStatusLine(headers.getStatusLine());
 
+        // Need to replicate the status line to the result object
+        result.setStatusLine(network.headers.getStatusLine());
+
         for (int i = 0; i < headers.length(); i++) {
             String fieldName = headers.getFieldName(i);
             String value = headers.getValue(i);
