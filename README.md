@@ -45,6 +45,12 @@ On Android, it may be desirable to use Android 4.0 and higher's built in [HttpRe
         }
     }
 
+Note that this library may be more up to date and have more bug fixes / features / performance improvements than the version included with the Android platform being targeted. For example, this library includes some performance improvements that are in Jelly Bean (4.1) but not in ICS (4.0). So if you want users on ICS to get these performance improvements, always use this library, and do not conditionally use the one from Android. In other words, you may want to always simply use:
+
+    com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+
+and not use the conditional code above.
+
 License
 -------
 This library is licensed under the terms of the Apache License, Version 2.0. You may obtain a copy of the license at http://www.apache.org/licenses/LICENSE-2.0
