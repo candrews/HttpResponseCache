@@ -14,40 +14,48 @@ Usage
 When using Maven (or any of the dependency management systems that use Maven's library, such as Ivy), simply add the dependency reference. The library, and its dependencies, are in Maven Central: http://mvnrepository.com/artifact/com.integralblue/httpresponsecache
 For example, for a Maven pom.xml:
 
-    <dependency>
-	    <groupId>com.integralblue</groupId>
-	    <artifactId>httpresponsecache</artifactId>
-	    <version>1.0.0</version>
-    </dependency>
+```xml
+<dependency>
+  <groupId>com.integralblue</groupId>
+  <artifactId>httpresponsecache</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 If Maven is not in use, such as when using a non-Maven Android project, include the httpresponsecache jar and its dependency, [DiskLruCache](https://github.com/JakeWharton/DiskLruCache).
 
 In the application, before making any HTTP(s) requests, simply call:
 
-    com.integralblue.httpresponsecache.HttpResponseCache.install(File directory, long maxSize);
+```java
+com.integralblue.httpresponsecache.HttpResponseCache.install(File directory, long maxSize);
+```
 
 Where directory is the directory to hold cache data, and maxSize is the maximum size of the cache in bytes.
 
 On Android, it may be desirable to use Android 4.0 and higher's built in [HttpResponseCache](https://developer.android.com/reference/android/net/http/HttpResponseCache.html) and fall back to this library on older versions of Android. This code would do that:
 
-    final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
-    final File httpCacheDir = new File(getCacheDir(), "http");
-    try {
-        Class.forName("android.net.http.HttpResponseCache")
-            .getMethod("install", File.class, long.class)
-            .invoke(null, httpCacheDir, httpCacheSize);
-    } catch (Exception httpResponseCacheNotAvailable) {
-        Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache not available, probably because we're running on a pre-ICS version of Android. Using com.integralblue.httpresponsecache.HttpHttpResponseCache.");
-        try{
-            com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
-        }catch(Exception e){
-            Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
-        }
+```java
+final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+final File httpCacheDir = new File(getCacheDir(), "http");
+try {
+    Class.forName("android.net.http.HttpResponseCache")
+        .getMethod("install", File.class, long.class)
+        .invoke(null, httpCacheDir, httpCacheSize);
+} catch (Exception httpResponseCacheNotAvailable) {
+    Ln.d(httpResponseCacheNotAvailable, "android.net.http.HttpResponseCache not available, probably because we're running on a pre-ICS version of Android. Using com.integralblue.httpresponsecache.HttpHttpResponseCache.");
+    try{
+        com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+    }catch(Exception e){
+        Ln.e(e, "Failed to set up com.integralblue.httpresponsecache.HttpResponseCache");
     }
+}
+```
 
 Note that this library may be more up to date and have more bug fixes / features / performance improvements than the version included with the Android platform being targeted. For example, this library includes some performance improvements that are in Jelly Bean (4.1) but not in ICS (4.0). So if you want users on ICS to get these performance improvements, always use this library, and do not conditionally use the one from Android. In other words, you may want to always simply use:
 
-    com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+```java
+com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+```
 
 and not use the conditional code above.
 
