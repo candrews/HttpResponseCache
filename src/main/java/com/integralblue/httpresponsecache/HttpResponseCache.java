@@ -146,6 +146,8 @@ import com.jakewharton.DiskLruCache;
 public final class HttpResponseCache extends ResponseCache
         implements Closeable, ExtendedResponseCache {
 
+    private static boolean calledSetURLStreamHandlerFactory = false;
+
     private final com.integralblue.httpresponsecache.compat.libcore.net.http.HttpResponseCache delegate;
 
     private HttpResponseCache(File directory, long maxSize) throws IOException {
@@ -188,8 +190,13 @@ public final class HttpResponseCache extends ResponseCache
 
         HttpResponseCache result = new HttpResponseCache(directory, maxSize);
         ResponseCache.setDefault(result);
-        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactoryImpl());
         HttpsURLConnection.setDefaultHostnameVerifier(new DefaultHostnameVerifier());
+        if(!calledSetURLStreamHandlerFactory) {
+            // The stream handler factory can only be set once, so don't set it again if it's already been set
+            // This can happen if the application calls install() then delete() then install() again
+            calledSetURLStreamHandlerFactory = true;
+            URL.setURLStreamHandlerFactory(new URLStreamHandlerFactoryImpl());
+        }
         return result;
     }
 
