@@ -40,6 +40,7 @@ import java.util.zip.GZIPInputStream;
 import javax.net.ssl.SSLSocketFactory;
 
 import com.integralblue.httpresponsecache.compat.Charsets;
+import com.integralblue.httpresponsecache.compat.Strings;
 import com.integralblue.httpresponsecache.compat.URLs;
 import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
@@ -639,7 +640,7 @@ public class HttpEngine {
         }
 
         RawHeaders headersToSend = getNetworkRequestHeaders();
-        byte[] bytes = headersToSend.toHeaderString().getBytes(Charsets.ISO_8859_1);
+        byte[] bytes = Strings.getBytes(headersToSend.toHeaderString(),Charsets.ISO_8859_1);
 
         if (contentLength != -1 && bytes.length + contentLength <= MAX_REQUEST_BUFFER_LENGTH) {
             requestOut = new BufferedOutputStream(socketOut, bytes.length + contentLength);

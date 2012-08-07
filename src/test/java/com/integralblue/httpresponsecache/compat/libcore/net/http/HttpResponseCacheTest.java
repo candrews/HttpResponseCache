@@ -19,6 +19,8 @@ package com.integralblue.httpresponsecache.compat.libcore.net.http;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.google.mockwebserver.RecordedRequest;
+import com.integralblue.httpresponsecache.compat.Charsets;
+import com.integralblue.httpresponsecache.compat.Strings;
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
 import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestSSLContext;
@@ -882,7 +884,7 @@ public final class HttpResponseCacheTest extends TestCase {
 
     private void assertNonIdentityEncodingCached(MockResponse response) throws Exception {
         server.enqueue(response
-                .setBody(gzip("ABCABCABC".getBytes("UTF-8")))
+                .setBody(gzip(Strings.getBytes("ABCABCABC",Charsets.UTF_8)))
                 .addHeader("Content-Encoding: gzip"));
         server.enqueue(new MockResponse().setResponseCode(HttpURLConnection.HTTP_NOT_MODIFIED));
 
@@ -1847,7 +1849,7 @@ public final class HttpResponseCacheTest extends TestCase {
                 throws IOException;
 
         void setBody(MockResponse response, String content, int chunkSize) throws IOException {
-            setBody(response, content.getBytes("UTF-8"), chunkSize);
+            setBody(response, Strings.getBytes(content,Charsets.UTF_8), chunkSize);
         }
     }
 

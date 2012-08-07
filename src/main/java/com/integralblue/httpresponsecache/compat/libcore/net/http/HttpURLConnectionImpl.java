@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.integralblue.httpresponsecache.compat.Charsets;
+import com.integralblue.httpresponsecache.compat.Strings;
 import com.integralblue.httpresponsecache.compat.URIs;
 import com.integralblue.httpresponsecache.compat.URLs;
 import com.integralblue.httpresponsecache.compat.libcore.io.Base64;
@@ -450,7 +451,7 @@ class HttpURLConnectionImpl extends HttpURLConnection {
 
             // base64 encode the username and password
             String usernameAndPassword = auth.getUserName() + ":" + new String(auth.getPassword());
-            byte[] bytes = usernameAndPassword.getBytes(Charsets.ISO_8859_1);
+            byte[] bytes = Strings.getBytes(usernameAndPassword, Charsets.ISO_8859_1);
             String encoded = Base64.encode(bytes);
             return challenge.scheme + " " + encoded;
         }

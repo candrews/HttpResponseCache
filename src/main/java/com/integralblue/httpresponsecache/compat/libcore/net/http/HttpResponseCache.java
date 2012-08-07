@@ -478,7 +478,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                 Certificate[] result = new Certificate[length];
                 for (int i = 0; i < result.length; i++) {
                     String line = Streams.readAsciiLine(in);
-                    byte[] bytes = Base64.decode(line.getBytes(Charsets.US_ASCII));
+                    byte[] bytes = Base64.decode(Strings.getBytes(line,Charsets.US_ASCII));
                     result[i] = certificateFactory.generateCertificate(
                             new ByteArrayInputStream(bytes));
                 }
