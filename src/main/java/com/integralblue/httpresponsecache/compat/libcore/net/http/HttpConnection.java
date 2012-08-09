@@ -28,7 +28,6 @@ import java.net.ProxySelector;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -89,14 +88,14 @@ final class HttpConnection {
     }
 
     public static HttpConnection connect(URI uri, SSLSocketFactory sslSocketFactory,
-    		Proxy proxy, boolean requiresTunnel, int connectTimeout) throws IOException {
+            Proxy proxy, boolean requiresTunnel, int connectTimeout) throws IOException {
         /*
          * Try an explicitly-specified proxy.
          */
         if (proxy != null) {
             Address address = (proxy.type() == Proxy.Type.DIRECT)
-            		? new Address(uri, sslSocketFactory)
-            		: new Address(uri, sslSocketFactory, proxy, requiresTunnel);
+                    ? new Address(uri, sslSocketFactory)
+                    : new Address(uri, sslSocketFactory, proxy, requiresTunnel);
             return HttpConnectionPool.INSTANCE.get(address, connectTimeout);
         }
 
@@ -114,7 +113,7 @@ final class HttpConnection {
                     continue;
                 }
                 try {
-                	Address address = new Address(uri, sslSocketFactory,
+                    Address address = new Address(uri, sslSocketFactory,
                             selectedProxy, requiresTunnel);
                     return HttpConnectionPool.INSTANCE.get(address, connectTimeout);
                 } catch (IOException e) {
@@ -249,7 +248,7 @@ final class HttpConnection {
      */
     public boolean isRecycled() {
         return recycled;
-	}
+    }
 
     public void setRecycled() {
         this.recycled = true;
@@ -290,7 +289,7 @@ final class HttpConnection {
             this.socketHost = uriHost;
             this.socketPort = uriPort;
             if (uriHost == null) {
-            	throw new UnknownHostException(uri.toString());
+                throw new UnknownHostException(uri.toString());
             }
         }
 
@@ -317,7 +316,7 @@ final class HttpConnection {
             this.socketHost = proxySocketAddress.getHostName();
             this.socketPort = proxySocketAddress.getPort();
             if (uriHost == null) {
-            		
+                throw new UnknownHostException(uri.toString());
             }
         }
 

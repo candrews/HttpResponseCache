@@ -525,7 +525,7 @@ final class HttpsURLConnectionImpl extends HttpsURLConnection {
         // Android's HttpsUrlConnection has a getSslSocketFactory method, while Java's does not.
         // So in Android, this is @Override, but here, it cannot be.
         protected SSLSocketFactory getSslSocketFactory() {
-        	return enclosing.getSSLSocketFactory();
+            return enclosing.getSSLSocketFactory();
         }
 
         @Override protected HttpURLConnection getHttpConnectionToCache() {

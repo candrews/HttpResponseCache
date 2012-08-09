@@ -37,7 +37,6 @@ import java.util.Map;
 
 import com.integralblue.httpresponsecache.compat.Charsets;
 import com.integralblue.httpresponsecache.compat.Strings;
-import com.integralblue.httpresponsecache.compat.URIs;
 import com.integralblue.httpresponsecache.compat.URLs;
 import com.integralblue.httpresponsecache.compat.libcore.io.Base64;
 import com.integralblue.httpresponsecache.compat.libcore.io.IoUtils;

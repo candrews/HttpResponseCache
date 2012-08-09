@@ -96,7 +96,7 @@ final class HttpConnectionPool {
                     connectionPool.put(address, connections);
                 }
                 if (connections.size() < maxConnections) {
-                	connection.setRecycled();
+                    connection.setRecycled();
                     connections.add(connection);
                     return; // keep the connection open
                 }

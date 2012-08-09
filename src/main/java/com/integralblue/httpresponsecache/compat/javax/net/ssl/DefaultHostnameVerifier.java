@@ -17,7 +17,6 @@
 
 package com.integralblue.httpresponsecache.compat.javax.net.ssl;
 
-import java.net.InetAddress;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
