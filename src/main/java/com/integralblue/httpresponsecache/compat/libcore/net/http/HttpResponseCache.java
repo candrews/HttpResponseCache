@@ -388,7 +388,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
 
                 if (isHttps()) {
                     String blank = Streams.readAsciiLine(in);
-                    if (!blank.isEmpty()) {
+                    if (!Strings.isEmpty(blank)) {
                         throw new IOException("expected \"\" but was \"" + blank + "\"");
                     }
                     cipherSuite = Streams.readAsciiLine(in);

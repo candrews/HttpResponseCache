@@ -17,6 +17,8 @@
 
 package com.integralblue.httpresponsecache.compat.javax.net.ssl;
 
+import com.integralblue.httpresponsecache.compat.Strings;
+
 import java.security.cert.Certificate;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -129,7 +131,7 @@ public final class DefaultHostnameVerifier implements HostnameVerifier {
      *     {@code *.android.com}.
      */
     public boolean verifyHostName(String hostName, String cn) {
-        if (hostName == null || hostName.isEmpty() || cn == null || cn.isEmpty()) {
+        if (hostName == null || Strings.isEmpty(hostName) || cn == null || Strings.isEmpty(cn)) {
             return false;
         }
 

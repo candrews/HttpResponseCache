@@ -609,7 +609,7 @@ public class HttpEngine {
     private void readHeaders(RawHeaders headers) throws IOException {
         // parse the result headers until the first blank line
         String line;
-        while (!(line = Streams.readAsciiLine(socketIn)).isEmpty()) {
+        while (!Strings.isEmpty(line = Streams.readAsciiLine(socketIn))) {
             headers.addLine(line);
         }
 
