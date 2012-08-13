@@ -197,7 +197,7 @@ public class HttpEngine {
         try {
             uri = URLs.toURILenient(policy.getURL());
         } catch (URISyntaxException e) {
-            throw new IOException(e);
+            throw new IOException(e.toString());
         }
 
         this.requestHeaders = new RequestHeaders(uri, new RawHeaders(requestHeaders));

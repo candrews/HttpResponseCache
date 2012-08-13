@@ -484,7 +484,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                 }
                 return result;
             } catch (CertificateException e) {
-                throw new IOException(e);
+                throw new IOException(e.toString());
             }
         }
 
@@ -501,7 +501,7 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
                     writer.write(line + '\n');
                 }
             } catch (CertificateEncodingException e) {
-                throw new IOException(e);
+                throw new IOException(e.toString());
             }
         }
 
