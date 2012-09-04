@@ -71,6 +71,7 @@ public final class HttpDate {
             parser = sParserPoolRfc1123.take();
             return parser.parse(value);
         } catch (ParseException ignore) {
+        } catch (InterruptedException ignore) {
         } finally {
             sParserPoolRfc1123.put(parser);
         }
@@ -87,10 +88,16 @@ public final class HttpDate {
      * Returns the string for {@code value}.
      */
     public static String format(Date value) {
-        DateFormat formatter = sParserPoolRfc1123.take();
-        String formattedString = formatter.format(value);
-        sParserPoolRfc1123.put(formatter);
-        return formattedString;
+        DateFormat formatter = null;
+
+        try{
+            formatter = sParserPoolRfc1123.take();
+            return formatter.format(value);
+        } catch (InterruptedException e) {
+            return "";
+        } finally{
+            sParserPoolRfc1123.put(formatter);
+        }
     }
 
     /** Class that creates a pool of RFC1123 DataFormat objects and allows taking, and returning those objects. */
@@ -119,14 +126,10 @@ public final class HttpDate {
          * Take a DateFormat object from the queue.
          * This will block until a DateFormat object is available.
          * When done using it be sure to call {@code #put(DateFormat)}}.
+         * @throws InterruptedException
          */
-        public DateFormat take() {
-            try {
-                return mObjects.take();
-            } catch (InterruptedException e) {
-                // This will never be interrupted
-                return null;
-            }
+        public DateFormat take() throws InterruptedException {
+            return mObjects.take();
         }
 
         /**
@@ -139,7 +142,8 @@ public final class HttpDate {
                     mObjects.put(dateFormat);
                 }
             } catch (InterruptedException e) {
-                // This will never be interrupted
+                // This should never be interrupted as it should never block
+                throw new RuntimeException(e);
             }
         }
     }
