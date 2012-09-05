@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.net.http;
+package libcore.net.http;
 
 import java.util.Arrays;
 import junit.framework.TestCase;
