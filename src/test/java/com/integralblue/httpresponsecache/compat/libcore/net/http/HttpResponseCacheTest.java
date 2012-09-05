@@ -66,6 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.GZIPOutputStream;
 import javax.net.ssl.HttpsURLConnection;
 import junit.framework.TestCase;
+import libcore.net.http.HttpResponseCache;
 
 public final class HttpResponseCacheTest extends TestCase {
     private MockWebServer server = new MockWebServer();

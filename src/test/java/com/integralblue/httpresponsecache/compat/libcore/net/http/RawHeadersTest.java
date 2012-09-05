@@ -18,6 +18,7 @@ package com.integralblue.httpresponsecache.compat.libcore.net.http;
 
 import java.util.Arrays;
 import junit.framework.TestCase;
+import libcore.net.http.RawHeaders;
 
 public class RawHeadersTest extends TestCase {
     // http://code.google.com/p/android/issues/detail?id=6684

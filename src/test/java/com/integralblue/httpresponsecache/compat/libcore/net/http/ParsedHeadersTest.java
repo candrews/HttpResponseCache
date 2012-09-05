@@ -21,6 +21,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import junit.framework.TestCase;
+import libcore.net.http.Challenge;
+import libcore.net.http.HeaderParser;
+import libcore.net.http.RawHeaders;
+import libcore.net.http.RequestHeaders;
+import libcore.net.http.ResponseHeaders;
 
 public final class ParsedHeadersTest extends TestCase {
 

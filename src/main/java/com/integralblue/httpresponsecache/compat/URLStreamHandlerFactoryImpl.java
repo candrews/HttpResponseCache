@@ -3,8 +3,9 @@ package com.integralblue.httpresponsecache.compat;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
-import com.integralblue.httpresponsecache.compat.libcore.net.http.HttpHandler;
-import com.integralblue.httpresponsecache.compat.libcore.net.http.HttpsHandler;
+import libcore.net.http.HttpHandler;
+import libcore.net.http.HttpsHandler;
+
 
 public class URLStreamHandlerFactoryImpl implements URLStreamHandlerFactory {
 

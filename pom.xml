@@ -136,6 +136,34 @@
 				</configuration>
 			</plugin>
 
+			
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>jarjar-maven-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jarjar</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                            </includes>
+                            <rules>
+                                <rule>
+                                    <pattern>libcore.**</pattern>
+                                    <result>com.integralblue.httpresponsecache.compat.libcore.@1</result>
+                                </rule>
+                                <keep>
+                                    <pattern>com.integralblue.httpresponsecache.**</pattern>
+                                </keep>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>animal-sniffer-maven-plugin</artifactId>
@@ -182,6 +210,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+				    <excludePackageNames>libcore:com.integralblue.httpresponsecache.compat</excludePackageNames>
+				</configuration>
 			</plugin>
 
 			<plugin>

@@ -34,9 +34,10 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import libcore.io.IoUtils;
+
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
-import com.integralblue.httpresponsecache.compat.libcore.io.IoUtils;
 import com.jakewharton.DiskLruCache;
 
 /***
@@ -148,10 +149,10 @@ public final class HttpResponseCache extends ResponseCache
 
     private static boolean calledSetURLStreamHandlerFactory = false;
 
-    private final com.integralblue.httpresponsecache.compat.libcore.net.http.HttpResponseCache delegate;
+    private final libcore.net.http.HttpResponseCache delegate;
 
     private HttpResponseCache(File directory, long maxSize) throws IOException {
-        this.delegate = new com.integralblue.httpresponsecache.compat.libcore.net.http.HttpResponseCache(directory, maxSize);
+        this.delegate = new libcore.net.http.HttpResponseCache(directory, maxSize);
     }
 
     /***
