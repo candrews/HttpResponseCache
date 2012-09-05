@@ -693,7 +693,7 @@ public class HttpEngine {
             requestHeaders.setHost(getOriginAddress(policy.getURL()));
         }
 
-        if (httpMinorVersion > 0 && requestHeaders.getConnection() == null) {
+        if (httpMinorVersion > 0 && requestHeaders.getConnection() == null && "false".equals(System.getProperty("http.keepAlive"))) {
             requestHeaders.setConnection("Keep-Alive");
         }
 
