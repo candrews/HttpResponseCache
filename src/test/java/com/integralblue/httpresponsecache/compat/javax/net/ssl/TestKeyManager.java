@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl;
+package com.integralblue.httpresponsecache.compat.javax.net.ssl;
 
 import java.io.PrintStream;
 import java.net.Socket;
@@ -25,8 +25,9 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.X509ExtendedKeyManager;
-import com.integralblue.httpresponsecache.compat.libcore.java.io.NullPrintStream;
-import com.integralblue.httpresponsecache.compat.libcore.java.security.StandardNames;
+
+import com.integralblue.httpresponsecache.compat.java.io.NullPrintStream;
+import com.integralblue.httpresponsecache.compat.java.security.StandardNames;
 
 /**
  * TestKeyManager is a simple proxy class that wraps an existing

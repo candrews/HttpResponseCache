@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.java.security;
+package com.integralblue.httpresponsecache.compat.java.security;
 
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
@@ -63,8 +63,8 @@ import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
-import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestKeyManager;
-import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestTrustManager;
+import com.integralblue.httpresponsecache.compat.javax.net.ssl.TestKeyManager;
+import com.integralblue.httpresponsecache.compat.javax.net.ssl.TestTrustManager;
 
 import junit.framework.Assert;
 

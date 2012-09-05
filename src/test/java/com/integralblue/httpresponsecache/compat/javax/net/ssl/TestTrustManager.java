@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl;
+package com.integralblue.httpresponsecache.compat.javax.net.ssl;
 
 import java.io.PrintStream;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import com.integralblue.httpresponsecache.compat.libcore.java.io.NullPrintStream;
-import com.integralblue.httpresponsecache.compat.libcore.java.security.StandardNames;
+
+import com.integralblue.httpresponsecache.compat.java.io.NullPrintStream;
+import com.integralblue.httpresponsecache.compat.java.security.StandardNames;
 
 /**
  * TestTrustManager is a simple proxy class that wraps an existing

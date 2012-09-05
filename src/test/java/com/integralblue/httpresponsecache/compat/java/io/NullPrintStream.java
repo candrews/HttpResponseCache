@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.java.io;
+package com.integralblue.httpresponsecache.compat.java.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;

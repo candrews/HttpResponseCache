@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.java.security;
+package com.integralblue.httpresponsecache.compat.java.security;
 
 import java.security.Security;
 import java.security.spec.DSAPrivateKeySpec;

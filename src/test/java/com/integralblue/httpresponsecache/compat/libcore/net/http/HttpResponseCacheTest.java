@@ -23,7 +23,7 @@ import com.integralblue.httpresponsecache.compat.Charsets;
 import com.integralblue.httpresponsecache.compat.Strings;
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
-import com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl.TestSSLContext;
+import com.integralblue.httpresponsecache.compat.javax.net.ssl.TestSSLContext;
 
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_END;
 import java.io.BufferedReader;

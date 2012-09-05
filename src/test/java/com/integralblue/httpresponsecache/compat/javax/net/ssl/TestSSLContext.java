@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.integralblue.httpresponsecache.compat.libcore.javax.net.ssl;
+package com.integralblue.httpresponsecache.compat.javax.net.ssl;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -36,8 +36,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
 import junit.framework.Assert;
-import com.integralblue.httpresponsecache.compat.libcore.java.security.StandardNames;
-import com.integralblue.httpresponsecache.compat.libcore.java.security.TestKeyStore;
+
+import com.integralblue.httpresponsecache.compat.java.security.StandardNames;
+import com.integralblue.httpresponsecache.compat.java.security.TestKeyStore;
 
 /**
  * TestSSLContext is a convenience class for other tests that
