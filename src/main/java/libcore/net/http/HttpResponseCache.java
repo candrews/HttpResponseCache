@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.CloneNotSupportedException;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
 import java.net.HttpURLConnection;
@@ -85,7 +86,16 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
 
     private String uriToKey(URI uri) {
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            MessageDigest messageDigest = (MessageDigest) MessageDigest.getInstance("MD5");
+            try {
+                // clone the messageDigest instance as a workaround for
+                // java.security.MessageDigest.getInstance(String) not being thread safe in Android
+                // see https://code.google.com/p/android/issues/detail?id=37937
+                messageDigest = (MessageDigest) messageDigest.clone();
+            } catch(CloneNotSupportedException e) {
+                // ignore the exception and use the original messageDigest.
+                // hopefully whatever platform we're on doesn't have the bug that requires the cloning workaround
+            }
             byte[] md5bytes = messageDigest.digest(Strings.getBytes(uri.toString(),Charsets.UTF_8));
             return Strings.bytesToHexString(md5bytes, false);
         } catch (NoSuchAlgorithmException e) {
