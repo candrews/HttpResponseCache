@@ -35,7 +35,6 @@ import java.net.SecureCacheResponse;
 import java.net.URI;
 import java.net.URLConnection;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
@@ -53,6 +52,7 @@ import libcore.io.IoUtils;
 import libcore.io.Streams;
 
 import com.integralblue.httpresponsecache.compat.Charsets;
+import com.integralblue.httpresponsecache.compat.MD5;
 import com.integralblue.httpresponsecache.compat.Strings;
 import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
@@ -84,13 +84,19 @@ public final class HttpResponseCache extends ResponseCache implements ExtendedRe
     }
 
     private String uriToKey(URI uri) {
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            byte[] md5bytes = messageDigest.digest(Strings.getBytes(uri.toString(),Charsets.UTF_8));
-            return Strings.bytesToHexString(md5bytes, false);
-        } catch (NoSuchAlgorithmException e) {
-            throw new AssertionError(e);
-        }
+        // try {
+        // MessageDigest.getInstance(String) isn't thread safe, but it should be.
+        // On Android, if that static method is invoked by multiple threads simultaneously,
+        // a ConcurrentModificationException is thrown. This affects only Android -
+        // Sun/Oracle/Open JREs all work correctly.
+        // see https://code.google.com/p/android/issues/detail?id=37937
+        // So use our own MD5 implementation instead.
+        MessageDigest messageDigest = new MD5();
+        byte[] md5bytes = messageDigest.digest(Strings.getBytes(uri.toString(),Charsets.UTF_8));
+        return Strings.bytesToHexString(md5bytes, false);
+        // } catch (NoSuchAlgorithmException e) {
+        //    throw new AssertionError(e);
+        //}
     }
 
     @Override public CacheResponse get(URI uri, String requestMethod,
