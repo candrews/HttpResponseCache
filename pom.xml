@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>com.google.mockwebserver</groupId>
 			<artifactId>mockwebserver</artifactId>
-			<version>20120801</version>
+			<version>20121111</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
