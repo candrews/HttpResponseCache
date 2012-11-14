@@ -181,7 +181,7 @@ public final class HttpResponseCache extends ResponseCache
             // don't close and reopen if an equivalent cache is already installed
             DiskLruCache installedCache = installed.delegate.getCache();
             if (installedCache.getDirectory().equals(directory)
-                    && installedCache.maxSize() == maxSize
+                    && installedCache.getMaxSize() == maxSize
                     && !installedCache.isClosed()) {
                 return installed;
             } else {
@@ -224,7 +224,7 @@ public final class HttpResponseCache extends ResponseCache
      * its data.
      */
     public long maxSize() {
-        return delegate.getCache().maxSize();
+        return delegate.getCache().getMaxSize();
     }
 
     /***
