@@ -693,7 +693,8 @@ public class HttpEngine {
             requestHeaders.setHost(getOriginAddress(policy.getURL()));
         }
 
-        if (httpMinorVersion > 0 && requestHeaders.getConnection() == null && "false".equals(System.getProperty("http.keepAlive"))) {
+        String keepAlive = System.getProperty("http.keepAlive");
+        if (httpMinorVersion > 0 && requestHeaders.getConnection() == null && (keepAlive==null || Boolean.parseBoolean(keepAlive))) {
             requestHeaders.setConnection("Keep-Alive");
         }
 
