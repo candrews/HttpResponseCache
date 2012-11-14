@@ -18,7 +18,7 @@ For example, for a Maven pom.xml:
 <dependency>
   <groupId>com.integralblue</groupId>
   <artifactId>httpresponsecache</artifactId>
-  <version>1.0.0</version>
+  <version>1.3</version>
 </dependency>
 ```
 
