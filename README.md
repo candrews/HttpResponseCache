@@ -1,9 +1,9 @@
 HttpResponseCache
 =================
 
-The HttpResponseCache library provides transparent and automatic caching of HTTP and HTTPS requests that use the java.net.HttpUrlConnection classes.
+The HttpResponseCache library provides transparent and automatic caching of HTTP and HTTPS requests that use the `java.net.HttpUrlConnection` classes.
 
-For information on how to use HttpUrlConnection, refer to the (Android documentation)[https://developer.android.com/reference/java/net/HttpURLConnection.html] - don't worry, the information also applies to non-Android Java.
+For information on how to use `HttpUrlConnection`, refer to the [Android documentation](https://developer.android.com/reference/java/net/HttpURLConnection.html) - don't worry, the information also applies to non-Android Java.
 
 Requirements
 ------------
@@ -11,8 +11,9 @@ This library will work on Java 5 and later, and (theoretically) any version of A
 
 Usage
 -----
-When using Maven (or any of the dependency management systems that use Maven's library, such as Ivy), simply add the dependency reference. The library, and its dependencies, are in Maven Central: http://mvnrepository.com/artifact/com.integralblue/httpresponsecache
-For example, for a Maven pom.xml:
+When using Maven (or any of the dependency management systems that use Maven's library, such as Ivy), simply add the dependency reference. The library, and its dependencies, [are in Maven Central](http://mvnrepository.com/artifact/com.integralblue/httpresponsecache).
+
+For example, for a Maven `pom.xml`:
 
 ```xml
 <dependency>
@@ -22,7 +23,7 @@ For example, for a Maven pom.xml:
 </dependency>
 ```
 
-If Maven is not in use, such as when using a non-Maven Android project, include the httpresponsecache jar and its dependency, [DiskLruCache](https://github.com/JakeWharton/DiskLruCache).
+If Maven is not in use, such as when using a non-Maven Android project, include the HttpResponseCache jar and its dependency, [DiskLruCache](https://github.com/JakeWharton/DiskLruCache).
 
 In the application, before making any HTTP(s) requests, simply call:
 
@@ -30,7 +31,7 @@ In the application, before making any HTTP(s) requests, simply call:
 com.integralblue.httpresponsecache.HttpResponseCache.install(File directory, long maxSize);
 ```
 
-Where directory is the directory to hold cache data, and maxSize is the maximum size of the cache in bytes.
+Where directory is the directory to hold cache data, and `maxSize` is the maximum size of the cache in bytes.
 
 On Android, it may be desirable to use Android 4.0 and higher's built in [HttpResponseCache](https://developer.android.com/reference/android/net/http/HttpResponseCache.html) and fall back to this library on older versions of Android. This code would do that:
 
@@ -65,4 +66,4 @@ This library is licensed under the terms of the Apache License, Version 2.0. You
 
 Origin/Contributors
 -------------------
-This library consists of code copied from the Android Open Source Project (AOSP). android.net.http.HttpResponseCache was copied, along with all of its non-standard-Java dependencies, to a new namespace and then modified to work under standard Java. Special thanks for Jesse Wilson for writing android.net.http.HttpResponseCache and assisting in the creation of this library. Also special thanks to Jake Wharton for porting [DiskLruCache](https://github.com/JakeWharton/DiskLruCache) from AOSP, greatly reducing the amount of work necessary to create this library.
+This library consists of code copied from the Android Open Source Project (AOSP). `android.net.http.HttpResponseCache` was copied, along with all of its non-standard-Java dependencies, to a new namespace and then modified to work under standard Java. Special thanks for Jesse Wilson for writing `android.net.http.HttpResponseCache` and assisting in the creation of this library. Also special thanks to Jake Wharton for porting [DiskLruCache](https://github.com/JakeWharton/DiskLruCache) from AOSP, greatly reducing the amount of work necessary to create this library.
