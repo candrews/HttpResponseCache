@@ -38,7 +38,7 @@ import libcore.io.IoUtils;
 
 import com.integralblue.httpresponsecache.compat.URLStreamHandlerFactoryImpl;
 import com.integralblue.httpresponsecache.compat.javax.net.ssl.DefaultHostnameVerifier;
-import com.jakewharton.DiskLruCache;
+import com.jakewharton.disklrucache.DiskLruCache;
 
 /***
  * Caches HTTP and HTTPS responses to the filesystem so they may be reused,
