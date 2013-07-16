@@ -56,7 +56,7 @@ import com.integralblue.httpresponsecache.compat.MD5;
 import com.integralblue.httpresponsecache.compat.Strings;
 import com.integralblue.httpresponsecache.compat.java.net.ExtendedResponseCache;
 import com.integralblue.httpresponsecache.compat.java.net.ResponseSource;
-import com.jakewharton.DiskLruCache;
+import com.jakewharton.disklrucache.DiskLruCache;
 
 /**
  * Cache responses in a directory on the file system. Most clients should use
